@@ -1,3 +1,8 @@
+// The popper wrapper is sized like the tooltip; it must not intercept pointer events of elements beneath it
+[data-reka-popper-content-wrapper]:has(> .tooltip) {
+	pointer-events: none;
+}
+
 .tooltip {
 	--tooltip-foreground-color: var(--foreground-inverted);
 	--tooltip-background-color: var(--background-inverted);

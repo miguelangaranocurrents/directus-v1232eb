@@ -66,6 +66,21 @@ const {
 	onUpdate: (value) => emit('update:modelValue', value),
 });
 
+const weekStartsOn = computed(() => {
+	try {
+		const locale = new Intl.Locale(userStore.language) as Intl.Locale & {
+			getWeekInfo?: () => { firstDay: number };
+			weekInfo?: { firstDay: number };
+		};
+
+		const firstDay = locale.getWeekInfo?.().firstDay ?? locale.weekInfo?.firstDay;
+		// Intl uses 1 (Monday) - 7 (Sunday); reka-ui expects 0 (Sunday) - 6 (Saturday)
+		return firstDay === undefined ? 0 : firstDay % 7;
+	} catch {
+		return 0;
+	}
+});
+
 const monthFormatter = computed(() => {
 	// Use 'long' for “January”, 'short' for “Jan”, 'narrow' for “J”
 	// timeZone: 'UTC' ensures the month name matches the UTC date created by `toDate('UTC')` below,
@@ -157,6 +172,8 @@ function setToNow() {
 			class="calendar"
 			fixed-weeks
 			weekday-format="short"
+			:locale="userStore.language"
+			:week-starts-on="weekStartsOn"
 			:dir="isRTL ? 'rtl' : 'ltr'"
 			@update:model-value="handleDateChange"
 		>
